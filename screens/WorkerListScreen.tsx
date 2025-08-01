@@ -21,6 +21,7 @@ type Worker = {
   services: string[];
   location: string;
   image?: string;
+  isAvailable?: boolean; // 👈 add this
 };
 
 export default function WorkerListScreen() {
@@ -72,6 +73,8 @@ useEffect(() => {
 
       <FlatList
         data={workers}
+        contentContainerStyle={{ paddingBottom: 0, flexGrow: 1 }}
+        showsVerticalScrollIndicator={false}
         refreshing={refreshing}
         onRefresh={() => {
           setRefreshing(true);
@@ -86,7 +89,12 @@ useEffect(() => {
                 style={styles.workerImage}
               />
               <View style={styles.infoColumn}>
-                <Text style={styles.name}>{item.name}</Text>
+                {/* <Text style={styles.name}>{item.name}</Text> */}
+                <View style={styles.nameRow}>
+                  <Text style={styles.name}>{item.name}</Text>
+                  {item.isAvailable && <Text style={styles.statusBadge}>Available</Text>}
+                  {!item.isAvailable && <Text style={styles.statusBadgeOffline}>Offline</Text>}
+                </View>
                 <Text style={styles.info}>
 
                   {item.services?.join(', ')} • {item.location}
@@ -102,7 +110,7 @@ useEffect(() => {
           </View>
 
         )}
-        ListEmptyComponent={<Text>No verified workers found.</Text>}
+        ListEmptyComponent={<Text style={{ textAlign: 'center', marginTop: 20 }}>No verified workers found.</Text>}
       />
       <Modal
         animationType="slide"
@@ -140,16 +148,17 @@ useEffect(() => {
 
 const styles = StyleSheet.create({
   container: {
-    padding: 20,
-    backgroundColor: '#ecf0f1',
     flex: 1,
+    backgroundColor: '#f2f2f2', // subtle background
+    paddingHorizontal: 16,
+    paddingBottom: 0,
   },
   header: {
-    fontSize: 24,
-    fontWeight: '600',
-    marginBottom: 20,
-    color: '#2c3e50',
-    textAlign: 'center',
+    fontSize: 22,
+    fontWeight: '700',
+    marginBottom: 10,
+    color: '#1e272e',
+    textAlign: 'left',
   },
   loading: {
     flex: 1,
@@ -157,33 +166,39 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   card: {
-    backgroundColor: '#fff',
-    padding: 18,
+    backgroundColor: '#ffffff',
+    padding: 14,
     borderRadius: 12,
-    marginBottom: 16,
-    elevation: 2,
+    marginBottom: 12,
+    flexDirection: 'row',
+    alignItems: 'center',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 3.84,
+    elevation: 3,
   },
   name: {
-    fontSize: 20,
+    fontSize: 18,
     fontWeight: 'bold',
-    color: '#34495e',
+    color: '#2d3436',
   },
   info: {
-    fontSize: 14,
-    color: '#7f8c8d',
-    marginVertical: 6,
+    fontSize: 13,
+    color: '#636e72',
+    marginVertical: 4,
   },
   callButton: {
     backgroundColor: '#27ae60',
-    padding: 12,
-    borderRadius: 8,
-    marginTop: 10,
+    paddingVertical: 10,
+    borderRadius: 6,
+    marginTop: 6,
   },
   callText: {
     color: '#fff',
     textAlign: 'center',
     fontWeight: '600',
-    fontSize: 16,
+    fontSize: 14,
   },
   row: {
     flexDirection: 'row',
@@ -192,19 +207,21 @@ const styles = StyleSheet.create({
 
   infoColumn: {
     flex: 1,
-    marginLeft: 12,
+    justifyContent: 'center',
   },
 
   workerImage: {
-    width: 70,
-    height: 70,
-    borderRadius: 35,
-    backgroundColor: '#ccc',
+    width: 60,
+    height: 60,
+    borderRadius: 30,
+    backgroundColor: '#dcdde1',
+    marginRight: 12,
   },
   detailsLink: {
     color: '#2980b9',
     fontWeight: '600',
-    marginTop: 8,
+    marginTop: 4,
+    fontSize: 13,
   },
   modalOverlay: {
     flex: 1,
@@ -253,6 +270,31 @@ const styles = StyleSheet.create({
     color: '#fff',
     fontWeight: '600',
     fontSize: 16,
+  },
+  nameRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+  },
+
+  statusBadge: {
+    backgroundColor: '#2ecc71',
+    color: '#fff',
+    paddingHorizontal: 8,
+    paddingVertical: 2,
+    fontSize: 12,
+    borderRadius: 12,
+    marginLeft: 8,
+  },
+
+  statusBadgeOffline: {
+    backgroundColor: '#bdc3c7',
+    color: '#2f3542',
+    paddingHorizontal: 8,
+    paddingVertical: 2,
+    fontSize: 12,
+    borderRadius: 12,
+    marginLeft: 8,
   },
 
 

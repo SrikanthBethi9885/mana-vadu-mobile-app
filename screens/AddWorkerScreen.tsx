@@ -16,7 +16,8 @@ import { db } from '../services/firebase';
 import i18n from '../i18n';
 import * as ImagePicker from 'expo-image-picker';
 import { Image } from 'react-native';
-
+import { updateDoc, doc } from 'firebase/firestore';
+import { auth } from '../services/firebase';
 const services = [
   'Plumber',
   'Electrician',
@@ -36,13 +37,19 @@ const AddWorkerScreen = () => {
   const [location, setLocation] = useState('');
   const [forceUpdate, setForceUpdate] = useState(false);
   const [image, setImage] = useState<string | null>(null);
-
+  const [isAvailable, setIsAvailable] = useState(true);
   const toggleService = (svc: string) => {
     if (selectedServices.includes(svc)) {
       setSelectedServices(selectedServices.filter(s => s !== svc));
     } else {
       setSelectedServices([...selectedServices, svc]);
     }
+  };
+  const toggleAvailability = async (current: boolean) => {
+    if (!auth.currentUser) return;
+
+    const workerRef = doc(db, 'workers', auth.currentUser.uid);
+    await updateDoc(workerRef, { isAvailable: !current });
   };
   const toggleLanguage = () => {
     i18n.locale = i18n.locale === 'en' ? 'te' : 'en';
@@ -79,6 +86,7 @@ const AddWorkerScreen = () => {
         services: selectedServices,
         location,
         image,
+        isAvailable, 
         createdAt: serverTimestamp(),
         isVerified: false,
       });
@@ -153,6 +161,12 @@ const AddWorkerScreen = () => {
           onChangeText={setLocation}
           style={styles.input}
         />
+        <View style={styles.toggleRow}>
+          <Text style={styles.toggleLabel}>Available:</Text>
+          <TouchableOpacity onPress={() => toggleAvailability(isAvailable)}>
+            <Text>{isAvailable ? '🟢 Available' : '⚪️ Not Available'}</Text>
+          </TouchableOpacity>
+        </View>
         <TouchableOpacity style={styles.button} onPress={handlePickImage}>
           <Text style={styles.buttonText}>📷 Take or Upload Photo</Text>
         </TouchableOpacity>
@@ -259,6 +273,24 @@ const styles = StyleSheet.create({
 
   serviceItemSelected: {
     backgroundColor: '#2980b9',
+  },
+  toggleRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: 20,
+  },
+  toggleLabel: {
+    fontSize: 16,
+    marginRight: 10,
+  },
+  toggleButton: {
+    paddingVertical: 8,
+    paddingHorizontal: 16,
+    borderRadius: 8,
+  },
+  toggleText: {
+    color: '#fff',
+    fontWeight: '600',
   },
 
 });

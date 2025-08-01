@@ -31,11 +31,11 @@ export default function HomeScreen({ navigation }: any) {
         {i18n.t('description')}
       </Animated.Text>
 
-      <Animated.View entering={FadeInDown.delay(600).duration(600)} style={styles.button}>
+      {/* <Animated.View entering={FadeInDown.delay(600).duration(600)} style={styles.button}>
         <TouchableOpacity onPress={() => navigation.navigate('AddWorker')}>
           <Text style={styles.buttonText}>➕ {i18n.t('addWorker')}</Text>
         </TouchableOpacity>
-      </Animated.View>
+      </Animated.View> */}
 
       <Animated.View entering={FadeInDown.delay(800).duration(600)} style={styles.button}>
         <TouchableOpacity onPress={() => navigation.navigate('WorkerList')}>
